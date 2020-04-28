@@ -59,6 +59,10 @@ var app = (function () {
         }
         return $$scope.dirty;
     }
+
+    function append(target, node) {
+        target.appendChild(node);
+    }
     function insert(target, node, anchor) {
         target.insertBefore(node, anchor || null);
     }
@@ -315,6 +319,10 @@ var app = (function () {
     function dispatch_dev(type, detail) {
         document.dispatchEvent(custom_event(type, Object.assign({ version: '3.21.0' }, detail)));
     }
+    function append_dev(target, node) {
+        dispatch_dev("SvelteDOMInsert", { target, node });
+        append(target, node);
+    }
     function insert_dev(target, node, anchor) {
         dispatch_dev("SvelteDOMInsert", { target, node, anchor });
         insert(target, node, anchor);
@@ -390,7 +398,7 @@ var app = (function () {
     		c: function create() {
     			div = element("div");
     			if (default_slot) default_slot.c();
-    			attr_dev(div, "class", "Container svelte-1aoo32b");
+    			attr_dev(div, "class", "Container svelte-r61xtc");
     			add_location(div, file, 0, 0, 0);
     		},
     		l: function claim(nodes) {
@@ -474,41 +482,68 @@ var app = (function () {
 
     function get_each_context(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[3] = list[i];
-    	child_ctx[5] = i;
+    	child_ctx[5] = list[i];
+    	child_ctx[7] = i;
     	return child_ctx;
     }
 
-    // (14:2) {#each todos as todo, index}
+    // (15:4) {#each todos as todo, index}
     function create_each_block(ctx) {
     	let input;
+    	let t0;
+    	let button;
+    	let t2;
+    	let br;
     	let dispose;
 
     	function input_input_handler() {
-    		/*input_input_handler*/ ctx[2].call(input, /*index*/ ctx[5]);
+    		/*input_input_handler*/ ctx[3].call(input, /*index*/ ctx[7]);
+    	}
+
+    	function click_handler(...args) {
+    		return /*click_handler*/ ctx[4](/*index*/ ctx[7], ...args);
     	}
 
     	const block = {
     		c: function create() {
     			input = element("input");
-    			add_location(input, file$1, 14, 4, 247);
+    			t0 = space();
+    			button = element("button");
+    			button.textContent = "X";
+    			t2 = space();
+    			br = element("br");
+    			add_location(input, file$1, 15, 6, 331);
+    			add_location(button, file$1, 16, 6, 371);
+    			add_location(br, file$1, 17, 6, 430);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, input, anchor);
-    			set_input_value(input, /*todos*/ ctx[0][/*index*/ ctx[5]]);
-    			if (remount) dispose();
-    			dispose = listen_dev(input, "input", input_input_handler);
+    			set_input_value(input, /*todos*/ ctx[0][/*index*/ ctx[7]]);
+    			insert_dev(target, t0, anchor);
+    			insert_dev(target, button, anchor);
+    			insert_dev(target, t2, anchor);
+    			insert_dev(target, br, anchor);
+    			if (remount) run_all(dispose);
+
+    			dispose = [
+    				listen_dev(input, "input", input_input_handler),
+    				listen_dev(button, "click", click_handler, false, false, false)
+    			];
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
 
-    			if (dirty & /*todos*/ 1 && input.value !== /*todos*/ ctx[0][/*index*/ ctx[5]]) {
-    				set_input_value(input, /*todos*/ ctx[0][/*index*/ ctx[5]]);
+    			if (dirty & /*todos*/ 1 && input.value !== /*todos*/ ctx[0][/*index*/ ctx[7]]) {
+    				set_input_value(input, /*todos*/ ctx[0][/*index*/ ctx[7]]);
     			}
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(input);
-    			dispose();
+    			if (detaching) detach_dev(t0);
+    			if (detaching) detach_dev(button);
+    			if (detaching) detach_dev(t2);
+    			if (detaching) detach_dev(br);
+    			run_all(dispose);
     		}
     	};
 
@@ -516,7 +551,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(14:2) {#each todos as todo, index}",
+    		source: "(15:4) {#each todos as todo, index}",
     		ctx
     	});
 
@@ -525,6 +560,7 @@ var app = (function () {
 
     // (12:0) <Container>
     function create_default_slot(ctx) {
+    	let main;
     	let h1;
     	let t1;
     	let t2;
@@ -540,6 +576,7 @@ var app = (function () {
 
     	const block = {
     		c: function create() {
+    			main = element("main");
     			h1 = element("h1");
     			h1.textContent = "Todos:";
     			t1 = space();
@@ -551,25 +588,27 @@ var app = (function () {
     			t2 = space();
     			button = element("button");
     			button.textContent = "Add";
-    			attr_dev(h1, "class", "svelte-1tky8bj");
-    			add_location(h1, file$1, 12, 2, 194);
-    			add_location(button, file$1, 17, 2, 294);
+    			attr_dev(h1, "class", "svelte-z8qz25");
+    			add_location(h1, file$1, 13, 4, 274);
+    			add_location(button, file$1, 20, 4, 452);
+    			add_location(main, file$1, 12, 2, 263);
     		},
     		m: function mount(target, anchor, remount) {
-    			insert_dev(target, h1, anchor);
-    			insert_dev(target, t1, anchor);
+    			insert_dev(target, main, anchor);
+    			append_dev(main, h1);
+    			append_dev(main, t1);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(target, anchor);
+    				each_blocks[i].m(main, null);
     			}
 
-    			insert_dev(target, t2, anchor);
-    			insert_dev(target, button, anchor);
+    			append_dev(main, t2);
+    			append_dev(main, button);
     			if (remount) dispose();
     			dispose = listen_dev(button, "click", /*addTodo*/ ctx[1], false, false, false);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*todos*/ 1) {
+    			if (dirty & /*removeSelf, todos*/ 5) {
     				each_value = /*todos*/ ctx[0];
     				validate_each_argument(each_value);
     				let i;
@@ -582,7 +621,7 @@ var app = (function () {
     					} else {
     						each_blocks[i] = create_each_block(child_ctx);
     						each_blocks[i].c();
-    						each_blocks[i].m(t2.parentNode, t2);
+    						each_blocks[i].m(main, t2);
     					}
     				}
 
@@ -594,11 +633,8 @@ var app = (function () {
     			}
     		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(h1);
-    			if (detaching) detach_dev(t1);
+    			if (detaching) detach_dev(main);
     			destroy_each(each_blocks, detaching);
-    			if (detaching) detach_dev(t2);
-    			if (detaching) detach_dev(button);
     			dispose();
     		}
     	};
@@ -639,7 +675,7 @@ var app = (function () {
     		p: function update(ctx, [dirty]) {
     			const container_changes = {};
 
-    			if (dirty & /*$$scope, todos*/ 65) {
+    			if (dirty & /*$$scope, todos*/ 257) {
     				container_changes.$$scope = { dirty, ctx };
     			}
 
@@ -670,15 +706,15 @@ var app = (function () {
     	return block;
     }
 
-    function removeSelf() {
-    	
-    }
-
     function instance$1($$self, $$props, $$invalidate) {
     	let todos = [];
 
     	function addTodo() {
     		$$invalidate(0, todos = [...todos, ""]);
+    	}
+
+    	function removeSelf(index) {
+    		$$invalidate(0, todos = [...todos.slice(0, index), ...todos.slice(index + 1)]);
     	}
 
     	const writable_props = [];
@@ -695,6 +731,7 @@ var app = (function () {
     		$$invalidate(0, todos);
     	}
 
+    	const click_handler = index => removeSelf(index);
     	$$self.$capture_state = () => ({ Container, todos, addTodo, removeSelf });
 
     	$$self.$inject_state = $$props => {
@@ -705,7 +742,7 @@ var app = (function () {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [todos, addTodo, input_input_handler];
+    	return [todos, addTodo, removeSelf, input_input_handler, click_handler];
     }
 
     class App extends SvelteComponentDev {
